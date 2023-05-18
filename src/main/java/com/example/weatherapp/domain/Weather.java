@@ -1,12 +1,10 @@
 package com.example.weatherapp.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
@@ -46,5 +44,24 @@ public class Weather {
         this.windSpeed = windSpeed;
         this.windDirection = windDirection;
         this.weatherCode = weatherCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Weather weather = (Weather) o;
+        return Double.compare(weather.latitude, latitude) == 0
+                && Double.compare(weather.longitude, longitude) == 0
+                && Double.compare(weather.temperature, temperature) == 0
+                && Double.compare(weather.windSpeed, windSpeed) == 0
+                && Double.compare(weather.windDirection, windDirection) == 0
+                && Double.compare(weather.weatherCode, weatherCode) == 0
+                && Objects.equals(ip, weather.ip);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ip, latitude, longitude, temperature, windSpeed, windDirection, weatherCode);
     }
 }

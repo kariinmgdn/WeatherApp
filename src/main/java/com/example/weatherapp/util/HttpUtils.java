@@ -3,7 +3,7 @@ package com.example.weatherapp.util;
 import com.example.weatherapp.external.IpAddressRestService;
 import jakarta.servlet.http.HttpServletRequest;
 
-public final class HttpUtils {
+public class HttpUtils {
 
     private final IpAddressRestService ipAddressRestService;
     private static final String[] IP_HEADERS = {
