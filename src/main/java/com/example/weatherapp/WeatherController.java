@@ -1,6 +1,6 @@
 package com.example.weatherapp;
 
-import com.example.weatherapp.domain.HistoricalAnalysis;
+import com.example.weatherapp.dto.weather.HistoricalAnalysis;
 import com.example.weatherapp.domain.Weather;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -26,9 +26,9 @@ public class WeatherController {
     }
 
     @GetMapping("/historicalAnalysis")
-    public HistoricalAnalysis getHistoricalAnalysisByIp(@RequestParam(value = "ip", required = false) String ip,
-                                                        @RequestParam(value = "latitude", required = false) Double latitude,
-                                                        @RequestParam(value = "longitude", required = false) Double longitude) {
+    public HistoricalAnalysis getHistoricalAnalysis(@RequestParam(value = "ip", required = false) String ip,
+                                                    @RequestParam(value = "latitude", required = false) Double latitude,
+                                                    @RequestParam(value = "longitude", required = false) Double longitude) {
         if (ip != null && !ip.isBlank()) {
             return service.getWeatherHistoricalAnalysisByIp(ip);
         } else if (latitude != null && !latitude.isNaN() && longitude != null && !longitude.isNaN()) {

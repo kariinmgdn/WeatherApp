@@ -1,4 +1,4 @@
-package com.example.weatherapp.domain;
+package com.example.weatherapp.dto.weather;
 
 public record HistoricalAnalysis(double averageTemperature,
                                  double minTemperature,

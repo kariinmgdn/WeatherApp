@@ -1,10 +1,11 @@
-package com.example.weatherapp.domain;
+package com.example.weatherapp.util;
 
-
+import com.example.weatherapp.external.IpAddressRestService;
 import jakarta.servlet.http.HttpServletRequest;
 
 public final class HttpUtils {
 
+    private final IpAddressRestService ipAddressRestService;
     private static final String[] IP_HEADERS = {
             "X-Forwarded-For",
             "Proxy-Client-IP",
@@ -19,7 +20,11 @@ public final class HttpUtils {
             "REMOTE_ADDR"
     };
 
-    public static String getRequestIP(HttpServletRequest request) {
+    public HttpUtils(IpAddressRestService ipAddressRestService) {
+        this.ipAddressRestService = ipAddressRestService;
+    }
+
+    public String getRequestOrExternalIp(HttpServletRequest request) {
         for (String header : IP_HEADERS) {
             String value = request.getHeader(header);
             if (value == null || value.isEmpty()) {
@@ -28,6 +33,10 @@ public final class HttpUtils {
             String[] parts = value.split("\\s*,\\s*");
             return parts[0];
         }
-        return request.getRemoteAddr();
+        String ipAddress = request.getRemoteAddr();
+        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
+            ipAddress = ipAddressRestService.getIpAddress().getIp();
+        }
+        return ipAddress;
     }
 }

@@ -1,15 +1,19 @@
 package com.example.weatherapp;
 
-import com.example.weatherapp.domain.Api;
-import com.example.weatherapp.domain.HistoricalAnalysis;
-import com.example.weatherapp.domain.HttpUtils;
+import com.example.weatherapp.dto.weather.HistoricalAnalysis;
+import com.example.weatherapp.external.IpAddressRestService;
+import com.example.weatherapp.external.LocationRestService;
+import com.example.weatherapp.external.WeatherRestService;
+import com.example.weatherapp.util.HttpUtils;
 import com.example.weatherapp.domain.Weather;
 import com.example.weatherapp.dto.location.Geo;
 import com.example.weatherapp.dto.weather.CurrentWeather;
 import com.example.weatherapp.dto.weather.WeatherResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,24 +25,30 @@ import java.util.function.ToDoubleFunction;
 public class WeatherService {
 
     private final WeatherRepository repository;
+    private final LocationRestService locationRestService;
+    private final WeatherRestService weatherRestService;
+    private final IpAddressRestService ipAddressRestService;
 
-    public WeatherService(WeatherRepository repository) {
+    public WeatherService(WeatherRepository repository,
+                          LocationRestService locationRestService,
+                          WeatherRestService weatherRestService,
+                          IpAddressRestService ipAddressRestService) {
         this.repository = repository;
+        this.locationRestService = locationRestService;
+        this.weatherRestService = weatherRestService;
+        this.ipAddressRestService = ipAddressRestService;
     }
 
     @Cacheable("weather")
     public Weather getWeather(HttpServletRequest request) {
-        String ipAddress = HttpUtils.getRequestIP(request);
-        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
-            ipAddress = Api.getIpAddress().getIp();
-        }
 
-        Geo location = Api.getLocation(ipAddress).getData().getGeo();
+        String ipAddress = new HttpUtils(ipAddressRestService).getRequestOrExternalIp(request);
+        Geo location = locationRestService.getLocation(ipAddress).getData().getGeo();
 
-        double a = formatDouble(location.getLatitude(), 2);
-        double b = formatDouble(location.getLongitude(), 2);
+        double latitude = formatDouble(location.getLatitude(), 2);
+        double longitude = formatDouble(location.getLongitude(), 2);
 
-        WeatherResponse weatherResponse = Api.getCurrentWeather(a, b);
+        WeatherResponse weatherResponse = weatherRestService.getCurrentWeather(latitude, longitude);
         CurrentWeather currentWeather = weatherResponse.getCurrent_weather();
 
         return repository.save(new Weather(
@@ -64,6 +74,10 @@ public class WeatherService {
     }
 
     private HistoricalAnalysis getHistoricalAnalysis(List<Weather> weatherList) {
+
+        if (weatherList.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
 
         DoubleSummaryStatistics temperatureStatistics = weatherList
                 .stream()
