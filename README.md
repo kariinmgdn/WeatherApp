@@ -2,8 +2,7 @@
 
 ### Description
 
-RESTful web service that returns the weather data determined by IP of a request originator. Upon receiving a request, 
-the service performs a geolocation search using [Keycdn](https://tools.keycdn.com/). After that service
+RESTful web service that returns the weather data determined by the IP of a request originator by handling GET requests to path “weather”. Upon receiving a request, the service performs a geolocation search using [Keycdn](https://tools.keycdn.com/). After receiving the geolocation data service
 uses [open-meteo](https://open-meteo.com/) to determine current weather conditions using the coordinates of the IP.
 
 ### Response examples
@@ -90,23 +89,23 @@ Clone this repository.
 
 ### Usage
 
-First, go to the directory where the project was previously cloned and run the following command to build the app.
+First, go to the directory where you previously cloned this project and run the following command to build the app.
 ```
 gradle build
 ```
-Before running the app you will need to create a Docker container. Run those commands in command prompt:
+Before running the app, you will need to create a Docker container. Run those commands in the command prompt:
 ```
 docker pull postgres
 
 docker run --name weather -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d postgres
 ```
-After that run the app via command:
+After that run the app via the command:
 ```
 gradlew bootRun
 ```
 
 
-After running the App, endpoint description will be available in [Swagger](http://localhost:8080/swagger-ui/index.html)
+After running the app, the endpoint description will be available in [Swagger](http://localhost:8080/swagger-ui/index.html)
 ![](Swagger.png)
 
 ## Tests
