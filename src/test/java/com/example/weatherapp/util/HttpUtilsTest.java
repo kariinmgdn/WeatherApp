@@ -29,7 +29,6 @@ public class HttpUtilsTest {
     @Test
     void testGetRequestOrExternalIpWithLocalIpAddress() {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        Mockito.doAnswer(a -> "0:0:0:0:0:0:0:1").when(request).getRemoteAddr();
         Mockito.doAnswer(a -> new IpAddress("19.199.123.156")).when(ipAddressRestService).getIpAddress();
         String result = new HttpUtils(ipAddressRestService).getRequestOrExternalIp(request);
         Assertions.assertEquals("19.199.123.156", result);

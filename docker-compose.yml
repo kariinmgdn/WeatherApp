@@ -1,0 +1,23 @@
+version: '3'
+services:
+  weather_app_postgres:
+    image: postgres:latest
+    hostname: localhost
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+  weather_app:
+    build: .
+    depends_on:
+      - weather_app_postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_app_postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:db/changelog/changelog-master.xml
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"

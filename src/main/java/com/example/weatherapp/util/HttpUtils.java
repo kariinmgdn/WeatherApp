@@ -33,10 +33,6 @@ public class HttpUtils {
             String[] parts = value.split("\\s*,\\s*");
             return parts[0];
         }
-        String ipAddress = request.getRemoteAddr();
-        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
-            ipAddress = ipAddressRestService.getIpAddress().getIp();
-        }
-        return ipAddress;
+        return ipAddressRestService.getIpAddress().getIp();
     }
 }
